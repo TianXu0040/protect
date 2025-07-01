@@ -1,8 +1,13 @@
 # character_select.py
 
 import pygame, sys
-from config import SCREEN_WIDTH, SCREEN_HEIGHT, DEFAULT_FIRE_DELAY, DEFAULT_BULLET_DAMAGE, MENU_OPTIONS, MENU_FONT_SIZE, MENU_FONT_NAME
-# （如果 MENU_FONT_* 未定义，可使用 SysFont）
+from config import SCREEN_WIDTH, SCREEN_HEIGHT, DEFAULT_FIRE_DELAY, DEFAULT_BULLET_DAMAGE, MENU_OPTIONS
+
+try:
+    from config import MENU_FONT_SIZE, MENU_FONT_NAME
+except ImportError:  # fallback if optional configs missing
+    MENU_FONT_SIZE = 48
+    MENU_FONT_NAME = None
 
 CHARACTERS = [
     {
@@ -34,11 +39,11 @@ CHARACTERS = [
 class CharacterSelect:
     def __init__(self, screen):
         self.screen = screen
-        fonts = ["SimHei","Microsoft YaHei","Arial"]
-        size = 48
+        fonts = [MENU_FONT_NAME] if MENU_FONT_NAME else ["SimHei","Microsoft YaHei","Arial"]
+        size = MENU_FONT_SIZE
         self.title_font = pygame.font.SysFont(fonts, size)
         self.option_font = pygame.font.SysFont(fonts, size)
-        self.info_font = pygame.font.SysFont(fonts, int(size*0.6))
+        self.info_font = pygame.font.SysFont(fonts, int(size * 0.6))
         self.selected = 0
 
     def draw(self):
