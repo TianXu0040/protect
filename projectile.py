@@ -1,0 +1,20 @@
+# projectile.py
+
+import pygame, math
+from config import DEFAULT_BULLET_DAMAGE
+
+class Projectile(pygame.sprite.Sprite):
+    def __init__(self, pos, angle, damage, piercing, image_path):
+        super().__init__()
+        self.damage=damage
+        self.piercing=piercing
+        base=pygame.image.load(image_path).convert_alpha()
+        self.image=pygame.transform.scale(base,(10,10))
+        self.rect=self.image.get_rect(center=pos)
+        rad=math.radians(angle)
+        self.vx, self.vy=math.sin(rad)*5, -math.cos(rad)*5
+
+    def update(self):
+        self.rect.x+=self.vx; self.rect.y+=self.vy
+        if not pygame.display.get_surface().get_rect().colliderect(self.rect):
+            self.kill()
