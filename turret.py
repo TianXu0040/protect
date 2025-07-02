@@ -1,6 +1,6 @@
 # turret.py
 
-import pygame, math, random
+import pygame, math, random, os
 from projectile import Projectile
 from config import TURRET_RADIUS
 
@@ -16,7 +16,8 @@ class Turret(pygame.sprite.Sprite):
         self.damage = damage
         self.piercing = piercing
         self.bimg = bullet_img
-        base = pygame.image.load(turret_img).convert_alpha()
+        path = os.path.join(os.path.dirname(__file__), turret_img)
+        base = pygame.image.load(path).convert_alpha()
         self.base = pygame.transform.scale(base, (TURRET_RADIUS * 2, TURRET_RADIUS * 2))
         self.image = self.base
         w,h=self.image.get_size()
@@ -32,18 +33,17 @@ class Turret(pygame.sprite.Sprite):
         if keys[pygame.K_RIGHT]:
             self.angle = (self.angle - 2) % 360
         # rotate the image so the turret appears where it's aiming
-        # pygame.transform.rotate expects counter-clockwise angles
-        self.image = pygame.transform.rotate(self.base, -self.angle)
+        self.image = pygame.transform.rotate(self.base, self.angle)
         self.rect=self.image.get_rect(center=self.rect.center)
         # fire
-        now=pygame.time.get_ticks()
+        now = pygame.time.get_ticks()
         if keys[pygame.K_SPACE] and now - self.last_fire >= self.delay:
             self.last_fire = now
-            rad = math.radians(self.angle)
+            rad = math.radians(-self.angle)
             dx, dy = math.sin(rad), -math.cos(rad)
             sx = self.rect.centerx + dx * TURRET_RADIUS
             sy = self.rect.centery + dy * TURRET_RADIUS
-            proj = Projectile((sx, sy), self.angle, self.damage, self.piercing, self.bimg)
+            proj = Projectile((sx, sy), -self.angle, self.damage, self.piercing, self.bimg)
             self.projectiles.add(proj)
 
     def draw(self):

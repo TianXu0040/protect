@@ -1,6 +1,6 @@
 # projectile.py
 
-import pygame, math
+import pygame, math, os
 from config import DEFAULT_BULLET_DAMAGE
 
 class Projectile(pygame.sprite.Sprite):
@@ -8,7 +8,8 @@ class Projectile(pygame.sprite.Sprite):
         super().__init__()
         self.damage=damage
         self.piercing=piercing
-        base=pygame.image.load(image_path).convert_alpha()
+        path = os.path.join(os.path.dirname(__file__), image_path)
+        base=pygame.image.load(path).convert_alpha()
         self.image=pygame.transform.scale(base,(10,10))
         self.rect=self.image.get_rect(center=pos)
         rad=math.radians(angle)
