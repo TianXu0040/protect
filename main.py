@@ -98,7 +98,8 @@ def show_leaderboard(screen):
             screen.blit(f.render(f"{i+1}.{ent['name']} {ent['score']}",True,WHITE),(100,120+i*40))
         for i,o in enumerate(opts):
             pre="> " if i==sel else "  "
-            screen.blit(f.render(pre+o,True,WHITE),((SCREEN_WIDTH-200)//2,SCREEN_HEIGHT-150+i*40))
+            color=HIGHLIGHT_COLOR if i==sel else WHITE
+            screen.blit(f.render(pre+o,True,color),((SCREEN_WIDTH-200)//2,SCREEN_HEIGHT-150+i*40))
         pygame.display.flip()
         for e in pygame.event.get():
             if e.type==pygame.QUIT: pygame.quit();sys.exit()
@@ -120,6 +121,7 @@ def run_game(character):
     ui_mgr=pygame_gui.UIManager((SCREEN_WIDTH,SCREEN_HEIGHT),theme)
     health=pygame_gui.elements.UIStatusBar(pygame.Rect(10,10,200,25),manager=ui_mgr)
     shader=pygame_shaders.DefaultScreenShader(display_surf)
+    kill_font=pygame.font.SysFont(["SimHei","Microsoft YaHei","Arial"],24)
 
     enemies=pygame.sprite.Group(); projs=pygame.sprite.Group()
     # Draw everything on the off-screen surface so the shader can process it
@@ -174,6 +176,8 @@ def run_game(character):
         turret.draw()
         particle_system.render(surface=display_surf)
         health.percent_full=max(0.0,min(1.0,hp/PLAYER_HEALTH))
+        kill_surf=kill_font.render(f"击杀: {kills}",True,BLACK)
+        display_surf.blit(kill_surf,(SCREEN_WIDTH-kill_surf.get_width()-10,10))
         ui_mgr.update(dt); ui_mgr.draw_ui(display_surf)
         shader.render(); pygame.display.flip()
         clock.tick(FPS)

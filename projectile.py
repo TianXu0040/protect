@@ -9,11 +9,12 @@ class Projectile(pygame.sprite.Sprite):
         self.damage=damage
         self.piercing=piercing
         path = os.path.join(os.path.dirname(__file__), image_path)
-        base=pygame.image.load(path).convert_alpha()
-        self.image=pygame.transform.scale(base,(10,10))
-        self.rect=self.image.get_rect(center=pos)
-        rad=math.radians(angle)
-        self.vx, self.vy=math.sin(rad)*5, -math.cos(rad)*5
+        base = pygame.image.load(path).convert_alpha()
+        base = pygame.transform.scale(base, (10, 10))
+        self.image = pygame.transform.rotate(base, angle)
+        self.rect = self.image.get_rect(center=pos)
+        rad = math.radians(angle)
+        self.vx, self.vy = math.sin(rad) * 5, -math.cos(rad) * 5
 
     def update(self):
         self.rect.x+=self.vx; self.rect.y+=self.vy
