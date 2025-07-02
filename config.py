@@ -23,6 +23,13 @@ ENEMY_SPAWN_DELAY  = 2000        # 毫秒
 ENEMY_SPEED        = 1
 ENEMY_HEALTH       = 100
 
+# === Boss配置 ===
+BOSS_SIZE          = 80
+BOSS_SPEED         = 0.5
+BOSS_HEALTH        = 500
+BOSS_SPAWN_KILLS   = 20
+BOSS_IMG           = "enemy.png"
+
 # 多种敌人类型，可拓展游戏难度
 ENEMY_TYPES = [
     {"speed": 1,   "health": 100, "img": "enemy.png"},   # 普通

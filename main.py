@@ -6,7 +6,7 @@ from particlepy.particle import Particle
 from particlepy.shape import Rect
 
 from config import *
-from enemy import Enemy
+from enemy import Enemy, BossEnemy
 from turret import Turret
 from menu import Menu
 from powerup import PowerUp
@@ -133,6 +133,32 @@ def show_leaderboard(screen):
                 if e.key==pygame.K_RETURN: return "restart" if sel==0 else "menu"
         clock.tick(30)
 
+def show_victory(screen, kills):
+    clock = pygame.time.Clock()
+    fonts = ["SimHei", "Microsoft YaHei", "Arial"]
+    f = pygame.font.SysFont(fonts, 36)
+    name = ""
+    while True:
+        screen.fill(BLACK)
+        screen.blit(f.render("胜 利", True, WHITE), ((SCREEN_WIDTH-200)//2, 100))
+        screen.blit(f.render(f"击杀: {kills}", True, WHITE), ((SCREEN_WIDTH-200)//2, 150))
+        instr = f.render("输入昵称并回车", True, WHITE)
+        screen.blit(instr, ((SCREEN_WIDTH-instr.get_width())//2, 250))
+        screen.blit(f.render(name, True, WHITE), ((SCREEN_WIDTH-f.size(name)[0])//2, 300))
+        pygame.display.flip()
+        for e in pygame.event.get():
+            if e.type == pygame.QUIT:
+                pygame.quit(); sys.exit()
+            if e.type == pygame.KEYDOWN:
+                if e.key == pygame.K_BACKSPACE:
+                    name = name[:-1]
+                elif e.key == pygame.K_RETURN and name.strip():
+                    save_score(name.strip(), kills)
+                    return show_leaderboard(screen)
+                elif e.unicode.isprintable():
+                    name += e.unicode
+        clock.tick(30)
+
 def run_game(character):
     # 切入 OpenGL 模式
     pygame.display.quit(); pygame.display.init()
@@ -147,7 +173,9 @@ def run_game(character):
     shader=pygame_shaders.DefaultScreenShader(display_surf)
     kill_font=pygame.font.SysFont(["SimHei","Microsoft YaHei","Arial"],24)
 
-    enemies=pygame.sprite.Group(); projs=pygame.sprite.Group(); powerups=pygame.sprite.Group()
+    enemies=pygame.sprite.Group(); projs=pygame.sprite.Group(); powerups=pygame.sprite.Group(); boss_group=pygame.sprite.Group()
+    boss_spawned = False
+    boss_defeated = False
     # 成就数据
     ach_path = os.path.join(os.path.dirname(__file__), ACHIEVEMENT_FILE)
     unlocked = load_unlocked(ach_path)
@@ -174,7 +202,11 @@ def run_game(character):
                 pt=random.choice(POWERUP_TYPES)
                 powerups.add(PowerUp(random.randint(20,SCREEN_WIDTH-20),pt))
         # 更新
-        turret.update(); enemies.update(); projs.update(); powerups.update()
+        turret.update(); enemies.update(); boss_group.update(); projs.update(); powerups.update()
+        # spawn boss
+        if kills >= BOSS_SPAWN_KILLS and not boss_spawned:
+            boss_group.add(BossEnemy(SCREEN_WIDTH//2, -BOSS_SIZE))
+            boss_spawned = True
         # 敌人到底部
         for en in list(enemies):
             if en.rect.top>SCREEN_HEIGHT:
@@ -188,6 +220,9 @@ def run_game(character):
                         delta_radius=-0.2
                     ))
                 if hp<=0: running=False
+        for boss in list(boss_group):
+            if boss.rect.top > SCREEN_HEIGHT:
+                running = False
         # 碰撞
         cols=pygame.sprite.groupcollide(enemies,projs,False,False)
         for en,ps in cols.items():
@@ -205,6 +240,15 @@ def run_game(character):
                             delta_radius=-0.3
                         ))
                 if not p.piercing: p.kill()
+
+        # Boss collision
+        bcols = pygame.sprite.groupcollide(boss_group, projs, False, False)
+        for boss, ps in bcols.items():
+            for p in ps:
+                if boss.take_damage(p.damage):
+                    boss.kill(); boss_defeated = True; running = False
+                if not p.piercing:
+                    p.kill()
         # Power-up collision
         for pu in list(powerups):
             if turret.rect.colliderect(pu.rect):
@@ -218,12 +262,18 @@ def run_game(character):
 
         # 绘制
         display_surf.fill(WHITE)
-        enemies.draw(display_surf); projs.draw(display_surf); powerups.draw(display_surf)
+        enemies.draw(display_surf); boss_group.draw(display_surf); projs.draw(display_surf); powerups.draw(display_surf)
         turret.draw()
         particle_system.render(surface=display_surf)
         health.percent_full=max(0.0,min(1.0,hp/PLAYER_HEALTH))
         kill_surf=kill_font.render(f"击杀: {kills}",True,BLACK)
         display_surf.blit(kill_surf,(SCREEN_WIDTH-kill_surf.get_width()-10,10))
+        if boss_group:
+            boss = boss_group.sprites()[0]
+            hp_ratio = max(0, boss.hp / BOSS_HEALTH)
+            bar_rect = pygame.Rect(SCREEN_WIDTH//2-100, 40, 200, 15)
+            pygame.draw.rect(display_surf, (80,80,80), bar_rect)
+            pygame.draw.rect(display_surf, (255,0,0), (bar_rect.x, bar_rect.y, int(bar_rect.width*hp_ratio), bar_rect.height))
         ui_mgr.update(dt); ui_mgr.draw_ui(display_surf)
         shader.render(); pygame.display.flip()
         clock.tick(FPS)
@@ -233,7 +283,10 @@ def run_game(character):
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     pygame.display.set_caption(GAME_TITLE)
     save_unlocked(ach_path, unlocked)
-    return show_game_over(screen, kills)
+    if boss_defeated:
+        return show_victory(screen, kills)
+    else:
+        return show_game_over(screen, kills)
 
 def main():
     pygame.init()
