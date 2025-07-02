@@ -23,8 +23,23 @@ ENEMY_SPAWN_DELAY  = 2000        # 毫秒
 ENEMY_SPEED        = 1
 ENEMY_HEALTH       = 100
 
+# 多种敌人类型，可拓展游戏难度
+ENEMY_TYPES = [
+    {"speed": 1,   "health": 100, "img": "enemy.png"},   # 普通
+    {"speed": 2,   "health": 70,  "img": "enemy.png"},   # 快速
+    {"speed": 0.5, "health": 300, "img": "enemy.png"},   # 坚甲
+]
+
+# 随机掉落的道具
+POWERUP_SPAWN_DELAY = 8000       # 毫秒
+POWERUP_TYPES = [
+    {"name": "heal",       "img": "bullet1.png", "effect": "heal"},
+    {"name": "rapid",      "img": "bullet2.png", "effect": "rapid"},
+    {"name": "piercing",   "img": "bullet3.png", "effect": "piercing"},
+]
+
 # === 菜单 & UI ===
-MENU_OPTIONS       = ["开始游戏", "退出"]
+MENU_OPTIONS       = ["开始游戏", "帮助", "退出"]
 
 # === 健康忠告 ===
 HEALTH_ADVICE_TITLE       = "健康游戏忠告"

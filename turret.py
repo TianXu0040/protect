@@ -26,8 +26,12 @@ class Turret(pygame.sprite.Sprite):
         self.last_fire=pygame.time.get_ticks()
 
     def update(self):
-        # rotate
+        # 移动与旋转
         keys=pygame.key.get_pressed()
+        if keys[pygame.K_a]:
+            self.rect.x=max(0,self.rect.x-3)
+        if keys[pygame.K_d]:
+            self.rect.x=min(self.screen.get_width()-self.rect.width,self.rect.x+3)
         if keys[pygame.K_LEFT]:
             self.angle = (self.angle + 2) % 360
         if keys[pygame.K_RIGHT]:

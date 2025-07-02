@@ -9,6 +9,7 @@ from config import *
 from enemy import Enemy
 from turret import Turret
 from menu import Menu
+from powerup import PowerUp
 from character_select import CharacterSelect
 from leaderboard import save_score, get_leaderboard
 
@@ -54,6 +55,27 @@ def show_story(screen):
             s=xf.render(l,True,WHITE)
             screen.blit(s,(50,120+i*30))
         p=xf.render("按任意键进入主菜单",True,WHITE)
+        screen.blit(p,((SCREEN_WIDTH-p.get_width())//2,SCREEN_HEIGHT-100))
+        pygame.display.flip()
+        for e in pygame.event.get():
+            if e.type==pygame.QUIT: pygame.quit();sys.exit()
+            if e.type==pygame.KEYDOWN: return
+        clock.tick(30)
+
+def show_help(screen):
+    clock=pygame.time.Clock()
+    fonts=["SimHei","Microsoft YaHei","Arial"]
+    f=pygame.font.SysFont(fonts,32)
+    lines=[
+        "A/D 移动炮塔", "←/→ 调整角度", "空格 发射子弹",
+        "拾取道具提升能力" ]
+    while True:
+        screen.fill(BLACK)
+        screen.blit(f.render("游戏说明",True,WHITE),((SCREEN_WIDTH-200)//2,80))
+        for i,l in enumerate(lines):
+            t=f.render(l,True,WHITE)
+            screen.blit(t,(80,160+i*40))
+        p=f.render("按任意键返回",True,WHITE)
         screen.blit(p,((SCREEN_WIDTH-p.get_width())//2,SCREEN_HEIGHT-100))
         pygame.display.flip()
         for e in pygame.event.get():
@@ -123,7 +145,7 @@ def run_game(character):
     shader=pygame_shaders.DefaultScreenShader(display_surf)
     kill_font=pygame.font.SysFont(["SimHei","Microsoft YaHei","Arial"],24)
 
-    enemies=pygame.sprite.Group(); projs=pygame.sprite.Group()
+    enemies=pygame.sprite.Group(); projs=pygame.sprite.Group(); powerups=pygame.sprite.Group()
     # Draw everything on the off-screen surface so the shader can process it
     turret = Turret(display_surf, enemies, projs,
                   character["fire_delay"],character["damage"],character["piercing"],
@@ -131,6 +153,7 @@ def run_game(character):
     clock=pygame.time.Clock(); prev=pygame.time.get_ticks()
     kills=0;hp=PLAYER_HEALTH
     pygame.time.set_timer(pygame.USEREVENT+1,ENEMY_SPAWN_DELAY)
+    pygame.time.set_timer(pygame.USEREVENT+2,POWERUP_SPAWN_DELAY)
 
     running=True
     while running:
@@ -140,9 +163,13 @@ def run_game(character):
             if e.type==pygame.QUIT: return "menu"
             ui_mgr.process_events(e)
             if e.type==pygame.USEREVENT+1:
-                enemies.add(Enemy(random.randint(ENEMY_SIZE//2,SCREEN_WIDTH-ENEMY_SIZE//2)))
+                et=random.choice(ENEMY_TYPES)
+                enemies.add(Enemy(random.randint(ENEMY_SIZE//2,SCREEN_WIDTH-ENEMY_SIZE//2),et))
+            if e.type==pygame.USEREVENT+2:
+                pt=random.choice(POWERUP_TYPES)
+                powerups.add(PowerUp(random.randint(20,SCREEN_WIDTH-20),pt))
         # 更新
-        turret.update(); enemies.update(); projs.update()
+        turret.update(); enemies.update(); projs.update(); powerups.update()
         # 敌人到底部
         for en in list(enemies):
             if en.rect.top>SCREEN_HEIGHT:
@@ -170,9 +197,20 @@ def run_game(character):
                             delta_radius=-0.3
                         ))
                 if not p.piercing: p.kill()
+        # Power-up collision
+        for pu in list(powerups):
+            if turret.rect.colliderect(pu.rect):
+                if pu.effect=="heal" and hp<PLAYER_HEALTH:
+                    hp=min(PLAYER_HEALTH,hp+1)
+                if pu.effect=="rapid":
+                    turret.delay=max(100,int(turret.delay*0.7))
+                if pu.effect=="piercing":
+                    turret.piercing=True
+                pu.kill()
+
         # 绘制
         display_surf.fill(WHITE)
-        enemies.draw(display_surf); projs.draw(display_surf)
+        enemies.draw(display_surf); projs.draw(display_surf); powerups.draw(display_surf)
         turret.draw()
         particle_system.render(surface=display_surf)
         health.percent_full=max(0.0,min(1.0,hp/PLAYER_HEALTH))
@@ -207,6 +245,8 @@ def main():
                 pygame.display.set_caption(GAME_TITLE)
                 menu = Menu(screen)
                 if action!="restart": break
+            elif c=="帮助":
+                show_help(screen)
             elif c=="退出":
                 pygame.quit();sys.exit()
         menu.draw(); clock.tick(30)
