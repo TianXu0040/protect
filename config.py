@@ -39,7 +39,7 @@ POWERUP_TYPES = [
 ]
 
 # === 菜单 & UI ===
-MENU_OPTIONS       = ["开始游戏", "帮助", "退出"]
+MENU_OPTIONS       = ["开始游戏", "帮助", "成就", "退出"]
 
 # === 健康忠告 ===
 HEALTH_ADVICE_TITLE       = "健康游戏忠告"
@@ -59,6 +59,9 @@ PLAYER_HEALTH      = 3
 # === 排行榜 ===
 LEADERBOARD_FILE        = "leaderboard.json"
 LEADERBOARD_MAX_ENTRIES = 10
+
+# === 成就存档 ===
+ACHIEVEMENT_FILE = "unlocked.txt"
 
 # === 游戏标题 ===
 GAME_TITLE = "守护仙居"

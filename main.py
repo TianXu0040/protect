@@ -12,6 +12,8 @@ from menu import Menu
 from powerup import PowerUp
 from character_select import CharacterSelect
 from leaderboard import save_score, get_leaderboard
+from achievements import load_unlocked, save_unlocked, check_achievements
+from achievement_screen import AchievementScreen
 
 # 全局粒子系统
 particle_system = particlepy.particle.ParticleSystem()
@@ -146,6 +148,9 @@ def run_game(character):
     kill_font=pygame.font.SysFont(["SimHei","Microsoft YaHei","Arial"],24)
 
     enemies=pygame.sprite.Group(); projs=pygame.sprite.Group(); powerups=pygame.sprite.Group()
+    # 成就数据
+    ach_path = os.path.join(os.path.dirname(__file__), ACHIEVEMENT_FILE)
+    unlocked = load_unlocked(ach_path)
     # Draw everything on the off-screen surface so the shader can process it
     turret = Turret(display_surf, enemies, projs,
                   character["fire_delay"],character["damage"],character["piercing"],
@@ -189,6 +194,9 @@ def run_game(character):
             for p in ps:
                 if en.take_damage(p.damage):
                     pos=en.rect.center; en.kill(); kills+=1
+                    new_achs = check_achievements(kills, unlocked)
+                    for a in new_achs:
+                        print('Unlocked:', a)
                     for _ in range(30):
                         particle_system.emit(Particle(
                             shape=Rect(radius=5,angle=random.randint(0,360),color=(255,180,50),alpha=255),
@@ -224,6 +232,7 @@ def run_game(character):
     pygame.display.quit(); pygame.display.init()
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     pygame.display.set_caption(GAME_TITLE)
+    save_unlocked(ach_path, unlocked)
     return show_game_over(screen, kills)
 
 def main():
@@ -247,6 +256,8 @@ def main():
                 if action!="restart": break
             elif c=="帮助":
                 show_help(screen)
+            elif c=="成就":
+                AchievementScreen(screen).run()
             elif c=="退出":
                 pygame.quit();sys.exit()
         menu.draw(); clock.tick(30)
