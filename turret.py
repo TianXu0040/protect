@@ -17,7 +17,7 @@ class Turret(pygame.sprite.Sprite):
         self.piercing = piercing
         self.bimg = bullet_img
         base = pygame.image.load(turret_img).convert_alpha()
-        self.base = pygame.transform.scale(base,(TURRET_RADIUS*2,TURRET_RADIUS*2))
+        self.base = pygame.transform.scale(base, (TURRET_RADIUS * 2, TURRET_RADIUS * 2))
         self.image = self.base
         w,h=self.image.get_size()
         self.rect=self.image.get_rect(center=(screen.get_width()//2, screen.get_height()-50))
@@ -33,12 +33,13 @@ class Turret(pygame.sprite.Sprite):
         self.rect=self.image.get_rect(center=self.rect.center)
         # fire
         now=pygame.time.get_ticks()
-        if keys[pygame.K_SPACE] and now-self.last_fire>=self.delay:
-            self.last_fire=now
-            rad=math.radians(self.angle)
-            dx,dy=math.sin(rad),-math.cos(rad)
-            sx,sy=self.rect.centerx+dx*TURRET_RADIUS, self.rect.centery+dy*TURRET_RADIUS
-            proj=Projectile((sx,sy), self.angle, self.damage, self.piercing, self.bimg)
+        if keys[pygame.K_SPACE] and now - self.last_fire >= self.delay:
+            self.last_fire = now
+            rad = math.radians(-self.angle)
+            dx, dy = math.sin(rad), -math.cos(rad)
+            sx = self.rect.centerx + dx * TURRET_RADIUS
+            sy = self.rect.centery + dy * TURRET_RADIUS
+            proj = Projectile((sx, sy), -self.angle, self.damage, self.piercing, self.bimg)
             self.projectiles.add(proj)
 
     def draw(self):

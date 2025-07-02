@@ -122,7 +122,8 @@ def run_game(character):
     shader=pygame_shaders.DefaultScreenShader(display_surf)
 
     enemies=pygame.sprite.Group(); projs=pygame.sprite.Group()
-    turret=Turret(screen,enemies,projs,
+    # Draw everything on the off-screen surface so the shader can process it
+    turret = Turret(display_surf, enemies, projs,
                   character["fire_delay"],character["damage"],character["piercing"],
                   character["turret_img"],character["bullet_img"])
     clock=pygame.time.Clock(); prev=pygame.time.get_ticks()
