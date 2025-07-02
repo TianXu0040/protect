@@ -43,7 +43,7 @@ class Turret(pygame.sprite.Sprite):
             dx, dy = math.sin(rad), -math.cos(rad)
             sx = self.rect.centerx + dx * TURRET_RADIUS
             sy = self.rect.centery + dy * TURRET_RADIUS
-            proj = Projectile((sx, sy), -self.angle, self.damage, self.piercing, self.bimg)
+            proj = Projectile((sx, sy), self.angle, self.damage, self.piercing, self.bimg)
             self.projectiles.add(proj)
 
     def draw(self):

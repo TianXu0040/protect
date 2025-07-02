@@ -182,7 +182,11 @@ def run_game(character):
         shader.render(); pygame.display.flip()
         clock.tick(FPS)
 
-    return show_game_over(pygame.display.get_surface(),kills)
+    # Switch back to a normal display for the game over and leaderboard screens
+    pygame.display.quit(); pygame.display.init()
+    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+    pygame.display.set_caption(GAME_TITLE)
+    return show_game_over(screen, kills)
 
 def main():
     pygame.init()
