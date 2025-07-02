@@ -201,10 +201,11 @@ def main():
             if c=="开始游戏":
                 char=CharacterSelect(screen).run()
                 action=run_game(char)
-                # 切回普通
+                # 切回普通并重新创建菜单以更新屏幕引用
                 pygame.display.quit();pygame.display.init()
                 screen=pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT))
                 pygame.display.set_caption(GAME_TITLE)
+                menu = Menu(screen)
                 if action!="restart": break
             elif c=="退出":
                 pygame.quit();sys.exit()
