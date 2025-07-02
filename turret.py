@@ -32,7 +32,8 @@ class Turret(pygame.sprite.Sprite):
         if keys[pygame.K_RIGHT]:
             self.angle = (self.angle - 2) % 360
         # rotate the image so the turret appears where it's aiming
-        self.image = pygame.transform.rotate(self.base, self.angle)
+        # pygame.transform.rotate expects counter-clockwise angles
+        self.image = pygame.transform.rotate(self.base, -self.angle)
         self.rect=self.image.get_rect(center=self.rect.center)
         # fire
         now=pygame.time.get_ticks()
