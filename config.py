@@ -10,6 +10,7 @@ FPS                = 60
 # === 颜色 ===
 WHITE = (255, 255, 255)
 BLACK = (0,   0,   0)
+HIGHLIGHT_COLOR = (255, 215, 0)  # 金色，用于高亮选项
 
 # === 炮塔 & 子弹默认配置 ===
 TURRET_RADIUS         = 20
@@ -22,8 +23,30 @@ ENEMY_SPAWN_DELAY  = 2000        # 毫秒
 ENEMY_SPEED        = 1
 ENEMY_HEALTH       = 100
 
+# === Boss配置 ===
+BOSS_SIZE          = 80
+BOSS_SPEED         = 0.5
+BOSS_HEALTH        = 500
+BOSS_SPAWN_KILLS   = 20
+BOSS_IMG           = "enemy.png"
+
+# 多种敌人类型，可拓展游戏难度
+ENEMY_TYPES = [
+    {"speed": 1,   "health": 100, "img": "enemy.png"},   # 普通
+    {"speed": 2,   "health": 70,  "img": "enemy.png"},   # 快速
+    {"speed": 0.5, "health": 300, "img": "enemy.png"},   # 坚甲
+]
+
+# 随机掉落的道具
+POWERUP_SPAWN_DELAY = 8000       # 毫秒
+POWERUP_TYPES = [
+    {"name": "heal",       "img": "bullet1.png", "effect": "heal"},
+    {"name": "rapid",      "img": "bullet2.png", "effect": "rapid"},
+    {"name": "piercing",   "img": "bullet3.png", "effect": "piercing"},
+]
+
 # === 菜单 & UI ===
-MENU_OPTIONS       = ["开始游戏", "退出"]
+MENU_OPTIONS       = ["开始游戏", "帮助", "成就", "退出"]
 
 # === 健康忠告 ===
 HEALTH_ADVICE_TITLE       = "健康游戏忠告"
@@ -43,6 +66,9 @@ PLAYER_HEALTH      = 3
 # === 排行榜 ===
 LEADERBOARD_FILE        = "leaderboard.json"
 LEADERBOARD_MAX_ENTRIES = 10
+
+# === 成就存档 ===
+ACHIEVEMENT_FILE = "unlocked.txt"
 
 # === 游戏标题 ===
 GAME_TITLE = "守护仙居"
