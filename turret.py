@@ -32,14 +32,14 @@ class Turret(pygame.sprite.Sprite):
             self.angle = (self.angle + 2) % 360
         if keys[pygame.K_RIGHT]:
             self.angle = (self.angle - 2) % 360
-        # rotate the image so the turret appears where it's aiming
-        self.image = pygame.transform.rotate(self.base, self.angle)
+        # Rotate clockwise to match the bullet direction
+        self.image = pygame.transform.rotate(self.base, -self.angle)
         self.rect=self.image.get_rect(center=self.rect.center)
         # fire
         now = pygame.time.get_ticks()
         if keys[pygame.K_SPACE] and now - self.last_fire >= self.delay:
             self.last_fire = now
-            rad = math.radians(-self.angle)
+            rad = math.radians(self.angle)
             dx, dy = math.sin(rad), -math.cos(rad)
             sx = self.rect.centerx + dx * TURRET_RADIUS
             sy = self.rect.centery + dy * TURRET_RADIUS

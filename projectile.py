@@ -11,11 +11,11 @@ class Projectile(pygame.sprite.Sprite):
         path = os.path.join(os.path.dirname(__file__), image_path)
         base = pygame.image.load(path).convert_alpha()
         base = pygame.transform.scale(base, (10, 10))
-        # Rotate the bullet to visually match the turret direction
-        self.image = pygame.transform.rotate(base, angle)
+        # Rotate clockwise to align with the turret orientation
+        self.image = pygame.transform.rotate(base, -angle)
         self.rect = self.image.get_rect(center=pos)
-        # Movement uses a clockwise angle with 0 at the top of the screen
-        rad = math.radians(-angle)
+        # Projectile motion uses the same clockwise angle
+        rad = math.radians(angle)
         self.vx, self.vy = math.sin(rad) * 5, -math.cos(rad) * 5
 
     def update(self):
