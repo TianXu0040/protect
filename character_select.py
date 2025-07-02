@@ -1,7 +1,7 @@
 # character_select.py
 
 import pygame, sys
-from config import SCREEN_WIDTH, SCREEN_HEIGHT, DEFAULT_FIRE_DELAY, DEFAULT_BULLET_DAMAGE, MENU_OPTIONS, MENU_FONT_SIZE, MENU_FONT_NAME
+from config import SCREEN_WIDTH, SCREEN_HEIGHT, DEFAULT_FIRE_DELAY, DEFAULT_BULLET_DAMAGE, MENU_OPTIONS, MENU_FONT_SIZE, MENU_FONT_NAME, WHITE, HIGHLIGHT_COLOR
 # （如果 MENU_FONT_* 未定义，可使用 SysFont）
 
 CHARACTERS = [
@@ -43,13 +43,14 @@ class CharacterSelect:
 
     def draw(self):
         self.screen.fill((0,0,0))
-        title = self.title_font.render("选择角色", True, (255,255,255))
+        title = self.title_font.render("选择角色", True, WHITE)
         self.screen.blit(title, ((SCREEN_WIDTH-title.get_width())//2, 80))
         # options
         for i, c in enumerate(CHARACTERS):
-            prefix = "> " if i==self.selected else "  "
-            surf = self.option_font.render(prefix+c["name"], True, (255,255,255))
-            self.screen.blit(surf, ((SCREEN_WIDTH-surf.get_width())//2, 160+i*60))
+            prefix = "> " if i == self.selected else "  "
+            color = HIGHLIGHT_COLOR if i == self.selected else WHITE
+            surf = self.option_font.render(prefix + c["name"], True, color)
+            self.screen.blit(surf, ((SCREEN_WIDTH - surf.get_width()) // 2, 160 + i * 60))
         # info table
         c = CHARACTERS[self.selected]
         x0, y0 = SCREEN_WIDTH//2-150, 160+len(CHARACTERS)*60 + 20
